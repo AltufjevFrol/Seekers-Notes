@@ -1,0 +1,65 @@
+body {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	height: 100vh;
+	width: 100%;
+	background: linear-gradient(45deg, #404040FF, #808080FF);
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: center;
+	align-items: center;
+}
+
+#container {
+	height: 100%;
+	position: relative;
+}
+
+#background {
+	display: block;
+}
+
+#grid {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	left: 0;
+	top: 0;
+	display: grid;
+	grid-template-rows: 26% 20% 20% 17% 17%;
+	grid-template-columns: 32% 6.5% 11% 11% 5.5% 7% 27%;
+	grid-template-areas:
+	"tutorial tutorial tutorial tutorial tutorial tutorial tutorial"
+	". . . . . . ."
+	". fan . basket . book ."
+	". . . shoe . . ."
+	"gui gui gui gui gui gui gui"
+	;
+}
+
+#tutorial {
+	grid-area: tutorial;
+	justify-self: center;
+	align-self: end;
+}
+
+#gui {
+	grid-area: gui;
+}
+
+#fan {
+	grid-area: fan;
+}
+
+#basket {
+	grid-area: basket;
+}
+
+#book {
+	grid-area: book;
+}
+
+#shoe {
+	grid-area: shoe;
+}
