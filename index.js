@@ -137,6 +137,15 @@ appendCanvasFromImg(book);
 }
 appendCanvasFromImg(shoe);
 
+	let cover = {
+	idstr: 'cover',
+	srcstr: 'img/cover.png',
+	widthstr: '',
+	heightstr: '',
+	parent: container
+}
+appendCanvasFromImg(cover);
+
 /*	let tutorial = document.createElement('canvas');
 	tutorial.id = 'tutorial';
 	grid.appendChild(tutorial);
@@ -164,3 +173,25 @@ imgbck.addEventListener('load', ()=>{
 	ctxbck.drawImage(imgbck,0,0);
 	
 }, false);*/
+
+const clickableObjects = [
+'fan',
+'basket',
+'book',
+'shoe'
+];
+function click(event){
+	let xClck = event.clientX;
+	let yClck = event.clientY
+	for(let i=0; i<clickableObjects.length; i++){
+		let box = document.getElementById(clickableObjects[i]);
+		let x = box.getBoundingClientRect().x;
+		let y = box.getBoundingClientRect().y;
+		let dx = x + box.getBoundingClientRect().width;
+		let dy = y + box.getBoundingClientRect().height;
+		if(xClck >= x && xClck <= dx && yClck >= y && yClck <= dy){
+			console.log('I am a '+box.id);
+		}
+	}
+}
+document.getElementById('container').addEventListener('click', click)
