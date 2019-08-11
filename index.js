@@ -34,6 +34,7 @@ function action(){
 		srcstr: строка с URL, можно использовать здесь dataURL base64
 		widthstr: css размеры,
 		heightstr: css размеры,
+
 		parent: элемент в который добавляем
 	}*/
 
@@ -183,15 +184,77 @@ const clickableObjects = [
 function click(event){
 	let xClck = event.clientX;
 	let yClck = event.clientY
-	for(let i=0; i<clickableObjects.length; i++){
-		let box = document.getElementById(clickableObjects[i]);
-		let x = box.getBoundingClientRect().x;
-		let y = box.getBoundingClientRect().y;
-		let dx = x + box.getBoundingClientRect().width;
-		let dy = y + box.getBoundingClientRect().height;
-		if(xClck >= x && xClck <= dx && yClck >= y && yClck <= dy){
-			console.log('I am a '+box.id);
+	for(let i of clickableObjects){
+		let box = document.getElementById(i);
+		let x = box.getBoundingClientRect().x;//кординаты верхнего левого угла
+		let y = box.getBoundingClientRect().y;//кординаты верхнего левого угла
+		let width = +getComputedStyle(box).width.replace('px','');//ширина
+		let height = +getComputedStyle(box).height.replace('px','');//высота
+		let matrixArr = getComputedStyle(box).transform.replace('matrix(','').replace(')','').split(', ').map((i)=>{return +i});//матрица преобразований в виде массива занчений
+		let dx, dy;
+		/*console.log('xClck = '+xClck);
+		console.log('yClck = '+yClck);
+		console.log('x = '+x);
+		console.log('y = '+y);*/
+		if (matrixArr[1]===0 && matrixArr[2]===0){
+			/*нет поворота*/
+			dx = x + width;
+			dy = y + height;
 		}
+		if(Math.abs(matrixArr[0])===Math.abs(matrixArr[1]) && Math.abs(matrixArr[1])===Math.abs(matrixArr[2]) && Math.abs(matrixArr[2])===Math.abs(matrixArr[3])){
+			/*случай угла 45 градусов*/
+				if(matrixArr[0]>0 && matrixArr[1]>0){//I четверть
+					x = x - height
+					dx = x + height*2;
+					dy = y + width;
+				}
+				if(matrixArr[0]<0 && matrixArr[1]>0){//II четверть
+					dx = x - width;
+					y = y - height
+					dy = y + height*2;
+				}
+				if(matrixArr[0]<0 && matrixArr[1]<0){//III четверть
+					x = x + height
+					dx = x - height*2;
+					dy = y + width;
+				}
+				if(matrixArr[0]>0 && matrixArr[1]<0){//IV четверть
+					dx = x + width;
+					y = y + height
+					dy = y - height*2;
+				}
+			}else{
+						if(Math.abs(matrixArr[1])>0.7 && Math.abs(matrixArr[2])<=1){//более вертикальное положение
+							if(matrixArr[1]>=0 && matrixArr[2]<0){//I и II четверть
+								dx = x - height;
+								dy = y + width;
+							}
+							if(matrixArr[1]<0 && matrixArr[2]>=0){//III и IV четверть
+								dx = x + height;
+								dy = y - width;
+							}
+						}
+						if(Math.abs(matrixArr[0])>0.7 && Math.abs(matrixArr[3])<=1){//более горизонтальное положение
+							if(matrixArr[0]>=0 && matrixArr[3]>=0){//I и IV четверть
+								dx = x + width;
+								dy = y + height;
+							}
+							if(matrixArr[0]<0 && matrixArr[3]<0){//IIи III четверть
+								dx = x - width;
+								dy = y - height;
+							}
+						}
+			}
+
+			let x1 = x<dx?x:dx;
+			let x2 = x>dx?x:dx;
+			let y1 = y<dy?y:dy;
+			let y2 = y>dy?y:dy;
+
+			if(xClck >= x1 && xClck <= x2 && yClck >= y1 && yClck <= y2){
+			console.log('I am a '+box.id);
+			}
+
 	}
 }
 document.getElementById('container').addEventListener('click', click)

@@ -50,8 +50,8 @@ body {
 
 #fan {
 	grid-area: fan;
-	transform: translateY(90%) rotate(225deg);
-	filter: brightness(0.3);
+	transform: translateY(90%) rotate(-135deg);
+	filter: brightness(0.5);
 }
 
 #basket {
