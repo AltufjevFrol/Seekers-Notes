@@ -188,8 +188,7 @@ const clickableObjects = [
 	'shoe'
 ];
 
-let colortext = 'rgba(79,1,1,1)';
-let count = 0;
+let count = {i:1,direction: true};
 
 function paintCanvasFromImg(src,id){
 	let box = document.getElementById(id);
@@ -361,40 +360,49 @@ function click(event){
 	}
 }
 
-function repaint(canvasProp, textProp){
+function repaint(canvasProp, ...textProps){
 	let box = document.getElementById(canvasProp.id);
 	let ctx = box.getContext('2d');
 	let width = box.width;
 	let height = box.height;
 	ctx.clearRect(0,0,width,height);
-
-	function text(textProp){
-		let text = {};
-		for(let p in textProp){
-			text[p] = textProp[p];
-		}
-		text.color = colortext;
-		paintText(text);
-		document.getElementById('tutorial').removeEventListener('ready', texFix)
+	for(prop of textProps){
+		paintText(prop);
 	}
-	let texFix = text.bind(null, textProp)
-	box.addEventListener('ready', texFix );
-	paintCanvasFromImg(canvasProp.src, canvasProp.id);
 }
 
+let text1 = {}
+let text2 = {}
+for(prop in textTutorial1){
+	text1[prop]=textTutorial1[prop];
+}
+for(prop in textTutorial2){
+	text2[prop]=textTutorial2[prop];
+}
 function pulse(){
-	if(count<3){
-		count = ++count;
-	}else{count=0;}
-
-	if(count%2>0){
-
-		repaint(tutorial,textTutorial1);
+	if(count.direction === true){
+		text1.color = 'rgba(79,1,1,'+(0.5+count.i/10)+')'
+		text2.color = 'rgba(79,1,1,'+(0.5+count.i/10)+')'
+		count.i = ++count.i;
 	}else{
-		colortext = 'rgba(79,1,1,'+count/3+')';
-		repaint(tutorial,textTutorial2);
+		count.i = --count.i;
+		text1.color = 'rgba(79,1,1,'+(0.5+count.i/10)+')'
+		text2.color = 'rgba(79,1,1,'+(0.5+count.i/10)+')'
+		
 	}
+	if(count.i<=1 || count.i>=5){
+		count.direction = !count.direction;
+	}
+	repaint(tutorialTXT, text1, text2);
 }
+
+document.body.addEventListener('ready', (event)=>{
+	if(event.target.id ==='tutorialTXT'){
+		setInterval(pulse,100);
+	}
+})
+
+/*let idPulse = setInterval(pulse,100);*/
 
 document.body.addEventListener('ready', t1);
 document.body.addEventListener('ready', t2);
@@ -411,7 +419,7 @@ appendCanvas(tutorial);
 /*необходимо чтобы сначала отрисовался tutorial нужны размеры его холоста
 что бы холст с надписью был идентичного размера*/
 document.body.addEventListener('ready', (event)=>{
-	if(event.target == document.getElementById('tutorial')){
+	if(event.target.id === 'tutorial'){
 		appendCanvas(tutorialTXT);
 	}
 });
@@ -428,7 +436,7 @@ appendCanvas(shoe);
 
 appendCanvas(cover);
 
-/*let idPulse = setInterval(pulse,500);*/
+
 
 
 /*action();*/
