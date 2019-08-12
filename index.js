@@ -24,51 +24,88 @@ function endVideo(event){
 	}
 console.log(event);
 }*/
-
-
-
-
-function action(){
-	/*	param = {
-		idstr: строка с id элемента,
-		srcstr: строка с URL, можно использовать здесь dataURL base64
-		widthstr: css размеры,
-		heightstr: css размеры,
-
-		parent: элемент в который добавляем
-	}*/
-
-	function appendCanvasFromImg({idstr = 'foo', srcstr = 'img/Tutorial1.png', widthstr = '25%', heightstr = '25%', parent = document.body} = {}){
-		let box = document.createElement('canvas');
-		let ctx = box.getContext('2d');
-		let img = new Image();
-		img.src = srcstr;
-		box.id = idstr;
-		img.addEventListener('load', ()=>{
+let eventReady = new CustomEvent('ready',{bubbles: true});
+function paintCanvasFromImg(src,id){
+	let box = document.getElementById(id);
+	let ctx = box.getContext('2d');
+	let img = new Image();
+	img.src = src;
+	img.addEventListener('load', ()=>{
 			box.width = img.naturalWidth
 			box.height = img.naturalHeight;
 			ctx.drawImage(img,0,0,box.width,box.height);
+			box.dispatchEvent(eventReady);
 		}, false);
+}
+
+	/*	param = {
+		id: строка с id элемента,
+		src: строка с URL, можно использовать здесь dataURL base64
+		width: css размеры,
+		height: css размеры,
+		parent: элемент в который добавляем
+	}*/
+	function appendCanvasFromImg(
+		{id = 'foo',
+		src = 'img/Tutorial1.png',
+		width = '25%',
+		height = '25%',
+		parent = document.body
+		} = {}){
+		let box = document.createElement('canvas');
+		box.id = id;
 		parent.appendChild(box);
-		box.style.width = widthstr;
-		box.style.height = heightstr;
+		paintCanvasFromImg(src, id);
+		box.style.width = width;
+		box.style.height = height;
 	}
 
+	/*{
+id текст с id canvas:,
+color цвет текста:,
+font css свойство font:,
+align: css свойства text align,
+text: сам текст,
+x: позиция,
+y: позиция,
+widthMAX: максимальная ширина
+}
+*/
+function paintText(
+{id = 'body',
+color = 'black',
+font = '30px serif',
+align = '',
+text = 'foo',
+x = 0,
+y = 0,
+widthMAX = 300
+}={}){
+	let box = document.getElementById(id);
+	let ctx = box.getContext('2d');
+	ctx.fillStyle = color;
+	ctx.font = font;
+	ctx.textAlign = align;
+	ctx.fillText(text, x, y, widthMAX);
+}
+
+
+function action(){
 /*добавляем коробку со сторонами пропорциональными локации(что бы не было искажения)*/
 	let container = document.createElement('article');
 	container.id = 'container';
-	document.body.appendChild(container);
 	container.style.width = document.body.offsetHeight/0.5625+'px';
+	document.body.appendChild(container);
 	window.addEventListener('resize', ()=>{
 		container.style.width = document.body.offsetHeight/0.5625+'px';
 	});
 
 /*добавляем canvas с локацией*/
 	let background = {
-		idstr: 'background',
-		srcstr: 'img/bg_ho.png',
-		widthstr: '100%',
-		heightstr: '100%',
+		id: 'background',
+		src: 'img/bg_ho.png',
+		width: '100%',
+		height: '100%',
 		parent: container
 	}
 	appendCanvasFromImg(background);
@@ -85,95 +122,152 @@ function action(){
 /*добавляем в сетку элементы*/
 
 let tutorial = {
-	idstr: 'tutorial',
-	srcstr: 'img/Tutorial1.png',
-	widthstr: '30%',
-	heightstr: '85%',
+	id: 'tutorial',
+	src: 'img/Tutorial1.png',
+	width: '30%',
+	height: '85%',
 	parent: grid
 }
 appendCanvasFromImg(tutorial);
 
 	let gui = {
-	idstr: 'gui',
-	srcstr: 'img/ho_gui.png',
-	widthstr: '100%',
-	heightstr: '100%',
+	id: 'gui',
+	src: 'img/ho_gui.png',
+	width: '100%',
+	height: '100%',
 	parent: grid
 }
 appendCanvasFromImg(gui);
 
 	let fan = {
-	idstr: 'fan',
-	srcstr: 'img/fan.png',
-	widthstr: '100%',
-	heightstr: '',
+	id: 'fan',
+	src: 'img/fan.png',
+	width: '100%',
+	height: '',
 	parent: grid
 }
 appendCanvasFromImg(fan);
 
 	let basket = {
-	idstr: 'basket',
-	srcstr: 'img/basket.png',
-	widthstr: '50%',
-	heightstr: '',
+	id: 'basket',
+	src: 'img/basket.png',
+	width: '50%',
+	height: '',
 	parent: grid
 }
 appendCanvasFromImg(basket);
 
 	let book = {
-	idstr: 'book',
-	srcstr: 'img/book.png',
-	widthstr: '100%',
-	heightstr: '',
+	id: 'book',
+	src: 'img/book.png',
+	width: '100%',
+	height: '',
 	parent: grid
 }
 appendCanvasFromImg(book);
 
 	let shoe = {
-	idstr: 'shoe',
-	srcstr: 'img/shoe.png',
-	widthstr: '75%',
-	heightstr: '',
+	id: 'shoe',
+	src: 'img/shoe.png',
+	width: '75%',
+	height: '',
 	parent: grid
 }
 appendCanvasFromImg(shoe);
 
 	let cover = {
-	idstr: 'cover',
-	srcstr: 'img/cover.png',
-	widthstr: '',
-	heightstr: '',
+	id: 'cover',
+	src: 'img/cover.png',
+	width: '',
+	height: '',
 	parent: container
 }
 appendCanvasFromImg(cover);
 
-/*	let tutorial = document.createElement('canvas');
-	tutorial.id = 'tutorial';
-	grid.appendChild(tutorial);
-	let ctxttr = tutorial.getContext('2d');
-	let imgttr = new Image();
-	imgttr.src = 'Tutorial1.png';
-	imgttr.addEventListener('load', ()=>{
-		ctxttr.drawImage(imgttr,0,0,tutorial.width,tutorial.height);
-	}, false);
-	tutorial.style.width = '30%';
-	tutorial.style.height = '85%';
+let textTutorial1 = {
+id: 'tutorial',
+color: 'rgba(79,1,1,1)',
+font: 'bold 80px "Unna", serif',
+align: 'center',
+text: 'FIND ALL THE',
+x: 515,
+y: 225,
+widthMAX: 1000
+};
 
-	let gui = document.createElement('div');
-	gui.id = 'gui';
-	grid.appendChild(gui);*/
+let textTutorial2 = {
+id: 'tutorial',
+color: 'rgba(79,1,1,1)',
+font: 'bold 80px "Unna", serif',
+align: 'center',
+text: 'HIDDEN OBJECTS!',
+x: 515,
+y: 325,
+widthMAX: 1000
+};
+
+let textFan, textBasket, textBook, textShoe;
+
+textFan = {
+id: 'gui',
+color: 'rgba(79,1,1,1)',
+font: 'bold 60px "Unna", serif',
+align: 'center',
+text: 'Fan',
+x: 543.2,
+y: 200,
+widthMAX: 543.2
+};
+
+textBasket = {
+id: 'gui',
+color: 'rgba(79,1,1,1)',
+font: 'bold 60px "Unna", serif',
+align: 'center',
+text: 'Basket',
+x: 1086.4,
+y: 200,
+widthMAX: 543.2
+};
+
+textBook = {
+id: 'gui',
+color: 'rgba(79,1,1,1)',
+font: 'bold 60px "Unna", serif',
+align: 'center',
+text: 'Book',
+x: 1629.6,
+y: 200,
+widthMAX: 543.2
+};
+
+textShoe = {
+id: 'gui',
+color: 'rgba(79,1,1,1)',
+font: 'bold 60px "Unna", serif',
+align: 'center',
+text: 'Shoe',
+x: 2172.8,
+y: 200,
+widthMAX: 543.2
+};
+
+
+document.getElementById('tutorial').addEventListener('ready', ()=>{
+	paintText(textTutorial1);
+	paintText(textTutorial2);
+});
+
+document.getElementById('gui').addEventListener('ready', ()=>{
+	paintText(textFan);
+	paintText(textBasket);
+	paintText(textBook);
+	paintText(textShoe);
+});
+
 }
 
 action();
-
-/*let ctxbck = background.getContext('2d');
-let imgbck = new Image();
-imgbck.src = 'bg_ho.png';
-imgbck.addEventListener('load', ()=>{
-	ctxbck.scale(0.15, 0.15);
-	ctxbck.drawImage(imgbck,0,0);
-	
-}, false);*/
 
 const clickableObjects = [
 'fan',
@@ -203,10 +297,11 @@ function click(event){
 		}
 		if(Math.abs(matrixArr[0])===Math.abs(matrixArr[1]) && Math.abs(matrixArr[1])===Math.abs(matrixArr[2]) && Math.abs(matrixArr[2])===Math.abs(matrixArr[3])){
 			/*случай угла 45 градусов*/
-				if(matrixArr[0]>0 && matrixArr[1]>0){//I четверть
-					x = x - height
-					dx = x + height*2;
+					dx = x + width;
 					dy = y + width;
+				/*if(matrixArr[0]>0 && matrixArr[1]>0){//I четверть
+					dx = x + 100;
+					dy = y + 100;
 				}
 				if(matrixArr[0]<0 && matrixArr[1]>0){//II четверть
 					dx = x - width;
@@ -222,7 +317,7 @@ function click(event){
 					dx = x + width;
 					y = y + height
 					dy = y - height*2;
-				}
+				}*/
 			}else{
 						if(Math.abs(matrixArr[1])>0.7 && Math.abs(matrixArr[2])<=1){//более вертикальное положение
 							if(matrixArr[1]>=0 && matrixArr[2]<0){//I и II четверть
@@ -257,4 +352,5 @@ function click(event){
 
 	}
 }
-document.getElementById('container').addEventListener('click', click)
+document.getElementById('container').addEventListener('click', click);
+
