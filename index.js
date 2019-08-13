@@ -115,6 +115,22 @@ const cover = {
 	parent: container
 }
 
+const logo = {
+	id: 'logo',
+	src: 'img/logo.png',
+	width: '60%',
+	height: '',
+	parent: grid
+}
+
+const button = {
+	id: 'button',
+	src: 'img/button.png',
+	width: '35%',
+	height: '',
+	parent: grid
+}
+
 const textTutorial1 = {
 	id: 'tutorialTXT',
 	color: 'rgba(79,1,1,1)',
@@ -181,6 +197,17 @@ const textShoe = {
 	widthMAX: 543.2
 };
 
+const textButton = {
+	id: 'button',
+	color: 'rgba(11,35,0,1)',
+	font: '60px "Unna", serif',
+	align: 'center',
+	text: 'PLAY FREE',
+	x: 276,
+	y: 75,
+	widthMAX: 500
+}
+
 let clickableObjects = [
 	'fan',
 	'basket',
@@ -189,6 +216,7 @@ let clickableObjects = [
 ];
 
 let count = {i:1,direction: true};
+let pulseID;
 
 function paintCanvasFromImg(src,id){
 	let box = document.getElementById(id);
@@ -282,6 +310,14 @@ function t2(event){
 	}
 }
 
+function t3() {
+	if(event.target == document.getElementById('button')){
+	paintText(textButton);
+	console.log('text added')
+	document.body.removeEventListener('ready', t3)
+	}
+}
+
 function click(event){
 	let xClck = event.clientX;
 	let yClck = event.clientY
@@ -372,13 +408,24 @@ function click(event){
 				console.log('I am a '+ removes);
 			}else{
 				console.log('WIN!');
+								setTimeout(()=>{clear();
+								appendCanvas(logo);
+								appendCanvas(button);
+								document.body.addEventListener('ready', t3);
+								document.getElementById('button').classList.add('pulse');
+								/*document.body.addEventListener('ready', (event)=>{
+									if(event.target.id ==='button'){
+									pulseID = setInterval(pulse,150,paintText,text3);
+									}
+								})*/
+							},2000);
 			}
 			}
 
 	}
 }
 
-function repaint(canvasProp, ...textProps){
+function repaint(canvasProp, textProps){
 	let box = document.getElementById(canvasProp.id);
 	let ctx = box.getContext('2d');
 	let width = box.width;
@@ -431,44 +478,65 @@ function lineThrough (foo){
 	}
 }
 
+function clear(){
+	clearInterval(pulseID);
+	clearTimeout(waitingID);
+	document.getElementById('container').removeEventListener('click', click);
+	document.getElementById('tutorial').remove();
+	document.getElementById('tutorialTXT').remove();
+	document.getElementById('cover').remove();
+	document.getElementById('shoe').remove();
+	document.getElementById('book').remove();
+	document.getElementById('basket').remove();
+	document.getElementById('fan').remove();
+	document.getElementById('gui').remove();
+	document.getElementById('background').style.filter = 'blur(3px)';
+}
+
+
 let waitingID = setTimeout(()=>{
 	let id = clickableObjects[0];
 	document.getElementById(id).classList.add('blink');
 },5000);
 
 
-let text1 = {}
-let text2 = {}
+let text1 = {};
+let text2 = {};
+let text3 = {}
 for(prop in textTutorial1){
 	text1[prop]=textTutorial1[prop];
 }
 for(prop in textTutorial2){
 	text2[prop]=textTutorial2[prop];
 }
-function pulse(){
+for(prop in textButton){
+	text3[prop]=textTutorial2[prop];
+}
+
+function pulse(canvas, ...texts){
 	if(count.direction === true){
-		text1.color = 'rgba(79,1,1,'+(0.5+count.i/10)+')'
-		text2.color = 'rgba(79,1,1,'+(0.5+count.i/10)+')'
+		for(elem of texts){
+			elem.color = 'rgba(79,1,1,'+(0.5+count.i/10)+')'
+		}
 		count.i = ++count.i;
 	}else{
 		count.i = --count.i;
-		text1.color = 'rgba(79,1,1,'+(0.5+count.i/10)+')'
-		text2.color = 'rgba(79,1,1,'+(0.5+count.i/10)+')'
-		
+		for(elem of texts){
+			elem.color = 'rgba(79,1,1,'+(0.5+count.i/10)+')'
+		}		
 	}
 	if(count.i<=1 || count.i>=5){
 		count.direction = !count.direction;
 	}
-	repaint(tutorialTXT, text1, text2);
+	repaint(canvas, texts);
 }
 
 document.body.addEventListener('ready', (event)=>{
 	if(event.target.id ==='tutorialTXT'){
-		setInterval(pulse,100);
+		pulseID = setInterval(pulse,100,tutorialTXT, text1, text2);
 	}
 })
 
-/*let idPulse = setInterval(pulse,100);*/
 
 document.body.addEventListener('ready', t1);
 document.body.addEventListener('ready', t2);

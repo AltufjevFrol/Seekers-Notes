@@ -89,6 +89,22 @@ body {
 	top: 0;
 }
 
+#logo {
+	grid-area: tutorial;
+	justify-self: center;
+	align-self: end;
+	transform: translateY(50%);
+	z-index: 2;
+}
+
+#button {
+	grid-area: gui;
+	justify-self: center;
+	align-self: end;
+	transform: translateY(-150%);
+	z-index: 2;
+}
+
 @keyframes out {
 	0%{
 		transform: translate(5vh,-5vh) rotate(0deg);
@@ -134,4 +150,20 @@ body {
 
 .blink {
 		animation: blink 1s linear infinite reverse;
+}
+
+@keyframes pulse {
+	from {
+		filter: brightness(0.6);;
+	}
+	50%{
+		filter: brightness(0.8);;
+	}
+	to {
+		filter: none;
+	}
+}
+
+.pulse {
+		animation: pulse 1s linear infinite reverse;
 }
