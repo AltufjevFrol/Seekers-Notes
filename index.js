@@ -181,7 +181,7 @@ const textShoe = {
 	widthMAX: 543.2
 };
 
-const clickableObjects = [
+let clickableObjects = [
 	'fan',
 	'basket',
 	'book',
@@ -354,7 +354,25 @@ function click(event){
 			let y2 = y>dy?y:dy;
 
 			if(xClck >= x1 && xClck <= x2 && yClck >= y1 && yClck <= y2){
-			console.log('I am a '+box.id);
+				let index = clickableObjects.findIndex((elem)=>{return elem === box.id});
+				let removes = clickableObjects.splice(index,1);
+				box.classList.remove('blink');
+				clearTimeout(waitingID);
+				clickableObjects.forEach((elem)=>{
+					document.getElementById(elem).classList.remove('blink');
+				})
+				box.classList.add('out');
+				lineThrough (i);
+				if(clickableObjects.length !== 0){
+				waitingID = setTimeout(()=>{
+					let id = clickableObjects[0];
+					document.getElementById(id).classList.add('blink');
+				},5000);
+				console.log(removes);
+				console.log('I am a '+ removes);
+			}else{
+				console.log('WIN!');
+			}
 			}
 
 	}
@@ -370,6 +388,54 @@ function repaint(canvasProp, ...textProps){
 		paintText(prop);
 	}
 }
+
+function lineThrough (foo){
+	function draw(
+	{id = 'body',
+	color = 'black',
+	font = '30px serif',
+	align = '',
+	text = 'foo',
+	x = 0,
+	y = 0,
+	widthMAX = 300
+	}={}){
+		let ctx = document.getElementById(id).getContext('2d');
+		ctx.fillStyle = color;
+		ctx.font = font;
+		ctx.textAlign = align;
+		let long = ctx.measureText(text).width + 40;
+		let startX = x - long/2;
+		let startY = y - 15;
+		ctx.fillRect(startX, startY, long, 5);
+	}
+	switch (foo){
+		case 'fan':
+		draw(textFan);
+		break;
+
+		case 'basket':
+		draw(textBasket);
+		break;
+
+		case 'book':
+		draw(textBook);
+		break;
+
+		case 'shoe':
+		draw(textShoe);
+		break;
+
+		default:
+		console.log('I do not know who to strike out');
+	}
+}
+
+let waitingID = setTimeout(()=>{
+	let id = clickableObjects[0];
+	document.getElementById(id).classList.add('blink');
+},5000);
+
 
 let text1 = {}
 let text2 = {}
